@@ -1,1 +1,23 @@
+version: 0.2
 
+phases:
+  pre_build:
+    commands:
+      - echo Logging in to Amazon ECR...
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin 084828581506.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com
+
+  build:
+    commands:
+      - echo Building Docker image...
+      - docker build -t shyamdev-dev-image-gallery:$CODEBUILD_RESOLVED_SOURCE_VERSION .
+      - docker tag shyamdev-dev-image-gallery:$CODEBUILD_RESOLVED_SOURCE_VERSION 084828581506.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/shyamdev-dev-image-gallery:$CODEBUILD_RESOLVED_SOURCE_VERSION
+
+  post_build:
+    commands:
+      - echo Pushing Docker image...
+      - docker push 084828581506.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/shyamdev-dev-image-gallery:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - printf '[{"name":"image-gallery","imageUri":"084828581506.dkr.ecr.%s.amazonaws.com/shyamdev-dev-image-gallery:%s"}]' "$AWS_DEFAULT_REGION" "$CODEBUILD_RESOLVED_SOURCE_VERSION" > imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
