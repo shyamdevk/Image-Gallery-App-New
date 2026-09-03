@@ -14,10 +14,15 @@ from PIL import Image as PILImage
 
 
 def should_use_s3():
-    """Check if S3 should be used (DEBUG=False and bucket configured)"""
-    debug = current_app.config.get('DEBUG', True)
+    """Check if S3 should be used based on deployment mode."""
+    deployment_mode = current_app.config.get(
+        'DEPLOYMENT_MODE',
+        os.getenv('DEPLOYMENT_MODE', 'local')
+    ).lower()
+
     bucket = current_app.config.get('S3_BUCKET_NAME')
-    return not debug and bucket
+
+    return deployment_mode == 'aws' and bool(bucket)
 
 
 def get_s3_client():
