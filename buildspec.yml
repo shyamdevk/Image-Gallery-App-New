@@ -9,14 +9,16 @@ phases:
   build:
     commands:
       - echo Building Docker image...
-      - docker build -t shyamdev-dev-image-gallery:$CODEBUILD_RESOLVED_SOURCE_VERSION .
-      - docker tag shyamdev-dev-image-gallery:$CODEBUILD_RESOLVED_SOURCE_VERSION 084828581506.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/shyamdev-dev-image-gallery:$CODEBUILD_RESOLVED_SOURCE_VERSION
+      - export IMAGE_TAG=${CODEBUILD_RESOLVED_SOURCE_VERSION}-${CODEBUILD_BUILD_NUMBER}
+      - docker build -t shyamdev-dev-image-gallery:$IMAGE_TAG .
+      - docker tag shyamdev-dev-image-gallery:$IMAGE_TAG 084828581506.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/shyamdev-dev-image-gallery:$IMAGE_TAG
 
   post_build:
     commands:
       - echo Pushing Docker image...
-      - docker push 084828581506.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/shyamdev-dev-image-gallery:$CODEBUILD_RESOLVED_SOURCE_VERSION
-      - printf '[{"name":"image-gallery","imageUri":"084828581506.dkr.ecr.%s.amazonaws.com/shyamdev-dev-image-gallery:%s"}]' "$AWS_DEFAULT_REGION" "$CODEBUILD_RESOLVED_SOURCE_VERSION" > imagedefinitions.json
+      - docker push 084828581506.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/shyamdev-dev-image-gallery:$IMAGE_TAG
+      - printf '[{"name":"image-gallery","imageUri":"084828581506.dkr.ecr.%s.amazonaws.com/shyamdev-dev-image-gallery:%s"}]' "$AWS_DEFAULT_REGION" "$IMAGE_TAG" > imagedefinitions.json
+      - echo Build completed
 
 artifacts:
   files:
