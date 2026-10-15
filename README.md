@@ -319,13 +319,3 @@ This project is provided as-is for educational purposes.
 ## Support
 
 For issues or questions, please review the code comments or modify the application as needed.
-
-
-## PipeLine Test
-- PipleLine Test Purpose
-- Test 2
-- Test 3
-- Test 4 
-- Test 5
-- Test 6
-- Test 7
